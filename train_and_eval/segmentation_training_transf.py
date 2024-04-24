@@ -24,7 +24,6 @@ def train_and_evaluate(net, dataloaders, config, device, lin_cls=False):
 
     def train_step(net, sample, loss_fn, optimizer, device, loss_input_fn):
         optimizer.zero_grad()
-        # print(sample['inputs'].shape)
         outputs = net(sample['inputs'].to(device))
         outputs = outputs.permute(0, 2, 3, 1)
         ground_truth = loss_input_fn(sample, device)
@@ -32,7 +31,7 @@ def train_and_evaluate(net, dataloaders, config, device, lin_cls=False):
         loss.backward()
         optimizer.step()
         return outputs, ground_truth, loss
-  
+
     def evaluate(net, evalloader, loss_fn, config):
         num_classes = config['MODEL']['num_classes']
         predicted_all = []
@@ -54,7 +53,7 @@ def train_and_evaluate(net, dataloaders, config, device, lin_cls=False):
                     predicted_all.append(predicted.view(-1).cpu().numpy())
                     labels_all.append(target.view(-1).cpu().numpy())
                 losses_all.append(loss.view(-1).cpu().detach().numpy())
-                
+
                 # if step > 5:
                 #    break
 
@@ -122,7 +121,7 @@ def train_and_evaluate(net, dataloaders, config, device, lin_cls=False):
     copy_yaml(config)
 
     loss_input_fn = get_loss_data_input(config)
-    
+
     loss_fn = {'all': get_loss(config, device, reduction=None),
                'mean': get_loss(config, device, reduction="mean")}
 
@@ -140,6 +139,7 @@ def train_and_evaluate(net, dataloaders, config, device, lin_cls=False):
     for epoch in range(start_epoch, start_epoch + num_epochs):  # loop over the dataset multiple times
         for step, sample in enumerate(dataloaders['train']):
             abs_step = start_global + (epoch - start_epoch) * num_steps_train + step
+            # import pdb; pdb.set_trace()
             logits, ground_truth, loss = train_step(net, sample, loss_fn, optimizer, device, loss_input_fn=loss_input_fn)
             if len(ground_truth) == 2:
                 labels, unk_masks = ground_truth
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     device_ids = [int(d) for d in args.device.split(',')]
     lin_cls = args.lin
 
-    device = get_device(device_ids, allow_cpu=False)
+    device = get_device(device_ids, allow_cpu=True)
 
     config = read_yaml(config_file)
     config['local_device_ids'] = device_ids

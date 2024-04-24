@@ -1,3 +1,10 @@
+
+import sys
+import os
+print(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
 from data.MTLCC.tfrecord2tif import TFRecord2Numpy
 from utils.multiprocessing_utils import run_pool
 import pickle
@@ -7,7 +14,7 @@ import random
 import os
 from glob import glob
 import argparse
-
+from functools import partial
 
 def tfrec2pickle(paths, rootdir):
 
@@ -70,10 +77,9 @@ def split_data_paths(pkl_paths, train_ids_file, eval_ids_file, rootdir):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description='gather relative paths for MTLCC tfrecords')
     parser.add_argument('--rootdir', required=True, help='data root directory')
-    parser.add_argument('--numworkers', type=int, default='4', help='number of parallel processes')
+    parser.add_argument('--numworkers', type=int, default='8', help='number of parallel processes')
     opt = parser.parse_args()
 
     data = glob(os.path.join(opt.rootdir, "data_IJGI18/datasets/full/240/data16/*.tfrecord.gz"))
@@ -85,10 +91,10 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(opt.rootdir, "data_IJGI18/datasets/full/240pkl")):
         os.makedirs(os.path.join(opt.rootdir, "data_IJGI18/datasets/full/240pkl"))
 
-    def extract_fun(paths):
-        return tfrec2pickle(paths, opt.rootdir)  # , save_rootdir)
+    # def extract_fun(paths):
+    #     return tfrec2pickle(paths, opt.rootdir)  # , save_rootdir)
 
-    out = run_pool(paths, extract_fun, opt.numworkers)
+    out = run_pool(paths, partial(tfrec2pickle, rootdir=opt.rootdir), opt.numworkers)
 
     pkl_paths = pd.DataFrame(np.concatenate(out))
     pkl_paths.to_csv(

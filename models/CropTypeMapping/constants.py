@@ -20,7 +20,7 @@ S1_DIR = "s1_npy"
 S2_DIR = "s2_npy"
 NROW = 5
 
-# FILE PATHS: 
+# FILE PATHS:
 BASE_DIR = os.getenv("HOME")
 
 GCP_DATA_DIR = BASE_DIR + '/croptype_data/data'
@@ -32,8 +32,8 @@ HDF5_PATH = { 'ghana': LOCAL_DATA_DIR + '/ghana/final_data.hdf5_32',
               'tanzania': LOCAL_DATA_DIR + '/tanzania/data_w_planet.hdf5',
               'germany': LOCAL_DATA_DIR + '/germany/data.hdf5'}
 
-GRID_DIR = { 'ghana': LOCAL_DATA_DIR + "/ghana", 
-             'southsudan': LOCAL_DATA_DIR + "/southsudan", 
+GRID_DIR = { 'ghana': LOCAL_DATA_DIR + "/ghana",
+             'southsudan': LOCAL_DATA_DIR + "/southsudan",
              'tanzania': LOCAL_DATA_DIR + "/tanzania",
              'germany': LOCAL_DATA_DIR + "/germany"}
 
@@ -68,18 +68,18 @@ HPS = [INT_POWER_EXP, REAL_POWER_EXP, INT_HP, FLOAT_HP, STRING_HP, BOOL_HP, INT_
 
 # LOSS WEIGHTS
 GHANA_LOSS_WEIGHT = 1 - np.array([.17, .56, .16, .11])
-GHANA_LOSS_WEIGHT = torch.tensor(GHANA_LOSS_WEIGHT, dtype=torch.float32).cuda()
+GHANA_LOSS_WEIGHT = torch.tensor(GHANA_LOSS_WEIGHT, dtype=torch.float32).cpu()
 
 SSUDAN_LOSS_WEIGHT = 1 - np.array([.72, .11, .10, .07])
-SSUDAN_LOSS_WEIGHT = torch.tensor(SSUDAN_LOSS_WEIGHT, dtype=torch.float32).cuda()
+SSUDAN_LOSS_WEIGHT = torch.tensor(SSUDAN_LOSS_WEIGHT, dtype=torch.float32).cpu()
 
 TANZ_LOSS_WEIGHT = 1 - np.array([.64, .14, .12, .05, .05])
-TANZ_LOSS_WEIGHT = torch.tensor(TANZ_LOSS_WEIGHT, dtype=torch.float32).cuda()
-          
-GERMANY_LOSS_WEIGHT = 1 - np.array([.02, .01, .07, .05, .03, .01, .02, .01, .01, .04, .01, .01, .27, .10, .01, .03, .32])
-GERMANY_LOSS_WEIGHT = torch.tensor(GERMANY_LOSS_WEIGHT, dtype=torch.float32).cuda()
+TANZ_LOSS_WEIGHT = torch.tensor(TANZ_LOSS_WEIGHT, dtype=torch.float32).cpu()
 
-LOSS_WEIGHT = { 'ghana': GHANA_LOSS_WEIGHT, 
+GERMANY_LOSS_WEIGHT = 1 - np.array([.02, .01, .07, .05, .03, .01, .02, .01, .01, .04, .01, .01, .27, .10, .01, .03, .32])
+GERMANY_LOSS_WEIGHT = torch.tensor(GERMANY_LOSS_WEIGHT, dtype=torch.float32).cpu()
+
+LOSS_WEIGHT = { 'ghana': GHANA_LOSS_WEIGHT,
                 'southsudan': SSUDAN_LOSS_WEIGHT,
                 'tanzania': TANZ_LOSS_WEIGHT,
                 'germany': GERMANY_LOSS_WEIGHT }
@@ -88,11 +88,11 @@ LOSS_WEIGHT = { 'ghana': GHANA_LOSS_WEIGHT,
 
 BANDS = { 's1': { 'VV': 0, 'VH': 1, 'RATIO': 2},
           's2': { '10': {'BLUE': 0, 'GREEN': 1, 'RED': 2, 'RDED1': 3, 'RDED2': 4, 'RDED3': 5, 'NIR': 6, 'RDED4': 7, 'SWIR1': 8, 'SWIR2': 9},
-                   '4': {'BLUE': 0, 'GREEN': 1, 'RED': 2, 'NIR': 3}}, 
+                   '4': {'BLUE': 0, 'GREEN': 1, 'RED': 2, 'NIR': 3}},
           'planet': { '4': {'BLUE': 0, 'GREEN': 1, 'RED': 2, 'NIR': 3}}}
 
-MEANS = { 's1': { 'ghana': np.array([-10.50, -17.24, 1.17]), 
-                  'southsudan': np.array([-9.02, -15.26, 1.15]), 
+MEANS = { 's1': { 'ghana': np.array([-10.50, -17.24, 1.17]),
+                  'southsudan': np.array([-9.02, -15.26, 1.15]),
                   'tanzania': np.array([-9.80, -17.05, 1.30])},
           's2': { 'ghana': np.array([2620.00, 2519.89, 2630.31, 2739.81, 3225.22, 3562.64, 3356.57, 3788.05, 2915.40, 2102.65]),
                   'southsudan': np.array([2119.15, 2061.95, 2127.71, 2277.60, 2784.21, 3088.40, 2939.33, 3308.03, 2597.14, 1834.81]),
@@ -109,7 +109,7 @@ STDS = { 's1': { 'ghana': np.array([3.57, 4.86, 5.60]),
                  'southsudan': np.array([4.49, 6.68, 21.75]),
                  'tanzania': np.array([3.53, 4.78, 16.61])},
          's2': { 'ghana': np.array([2171.62, 2085.69, 2174.37, 2084.56, 2058.97, 2117.31, 1988.70, 2099.78, 1209.48, 918.19]),
-                 'southsudan': np.array([2113.41, 2026.64, 2126.10, 2093.35, 2066.81, 2114.85, 2049.70, 2111.51, 1320.97, 1029.58]), 
+                 'southsudan': np.array([2113.41, 2026.64, 2126.10, 2093.35, 2066.81, 2114.85, 2049.70, 2111.51, 1320.97, 1029.58]),
                  'tanzania': np.array([2290.97, 2204.75, 2282.90, 2214.60, 2182.51, 2226.10, 2116.62, 2210.47, 1428.33, 1135.21]),
                  'germany': np.array([1943.62, 1755.82, 1841.09, 5703.38, 5104.90, 5136.54, 1663.27, 5125.05, 3682.57, 3273.71])},
          'planet': { 'ghana': np.array([602.51, 598.66, 637.06, 966.27]),
@@ -125,19 +125,19 @@ NUM_CLASSES = { 'ghana': 4,
                 'tanzania': 5,
                 'germany': 17 }
 
-GRID_SIZE = { 'ghana': 32, 
-              'southsudan': 32, 
-              'tanzania': 32, 
+GRID_SIZE = { 'ghana': 32,
+              'southsudan': 32,
+              'tanzania': 32,
               'germany': 48 }
 
-CM_LABELS = { 'ghana': [0, 1, 2, 3], 
-              'southsudan': [0, 1, 2, 3], 
+CM_LABELS = { 'ghana': [0, 1, 2, 3],
+              'southsudan': [0, 1, 2, 3],
               'tanzania': [0, 1, 2, 3, 4],
               'germany': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] }
 
-CROPS = { 'ghana': ['groundnut', 'maize', 'rice', 'soya bean'], 
-          'southsudan': ['sorghum', 'maize', 'rice', 'groundnut'], 
+CROPS = { 'ghana': ['groundnut', 'maize', 'rice', 'soya bean'],
+          'southsudan': ['sorghum', 'maize', 'rice', 'groundnut'],
           'tanzania': ['maize', 'beans', 'sunflower', 'chickpeas', 'wheat'],
-          'germany': ['sugar beet', 'summer oat', 'meadow', 'rapeseed', 'hop', 'winter spelt', 
-                      'winter triticale', 'beans', 'peas', 'potato', 'soybeans', 'asparagus', 
+          'germany': ['sugar beet', 'summer oat', 'meadow', 'rapeseed', 'hop', 'winter spelt',
+                      'winter triticale', 'beans', 'peas', 'potato', 'soybeans', 'asparagus',
                       'winter wheat', 'winter barley', 'winter rye', 'summer barley', 'maize']}
