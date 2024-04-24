@@ -1,0 +1,13 @@
+pandas
+numpy
+matplotlib
+scipy
+torch
+torchvision
+torchaudio
+pyyaml
+tensorflow==2.15.1
+geopandas
+scikit-learn
+einops
+timm

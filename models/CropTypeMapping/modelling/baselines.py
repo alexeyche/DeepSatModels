@@ -5,7 +5,7 @@ from keras.layers import Conv1D, MaxPooling1D
 from keras import regularizers
 from keras.layers import Bidirectional, TimeDistributed, concatenate
 from keras.backend import reverse
-from keras.engine.input_layer import Input
+from keras.layers import Input
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -73,12 +73,12 @@ def make_1d_nn_model(num_classes, num_input_feats, units, reg_strength, input_ba
     model = Sequential()
 
     model.add(Flatten())
-    model.add(Dense(units=units, kernel_regularizer=reg, 
+    model.add(Dense(units=units, kernel_regularizer=reg,
               bias_regularizer=reg, input_shape=(num_input_feats, input_bands)))
     model.add(Activation('relu'))
     model.add(Dropout(rate=dropout))
     model.add(BatchNormalization())
-    model.add(Dense(num_classes, activation='softmax', 
+    model.add(Dense(num_classes, activation='softmax',
               kernel_regularizer=reg, bias_regularizer=reg))
 
     return model
@@ -102,7 +102,7 @@ def make_1d_2layer_nn_model(num_classes, num_input_feats, units, reg_strength, i
     model = Sequential()
 
     model.add(Flatten())
-    model.add(Dense(units=units, kernel_regularizer=reg, 
+    model.add(Dense(units=units, kernel_regularizer=reg,
               bias_regularizer=reg, input_shape=(num_input_feats, input_bands)))
     model.add(Activation('relu'))
     model.add(Dropout(rate=dropout))
@@ -112,7 +112,7 @@ def make_1d_2layer_nn_model(num_classes, num_input_feats, units, reg_strength, i
     model.add(Activation('relu'))
     model.add(Dropout(rate=dropout))
     model.add(BatchNormalization())
-    model.add(Dense(num_classes, activation='softmax', 
+    model.add(Dense(num_classes, activation='softmax',
               kernel_regularizer=reg, bias_regularizer=reg))
 
     return model
@@ -132,7 +132,7 @@ def make_1d_cnn_model(num_classes, num_input_feats, units, reg_strength, input_b
       loads self.model as the defined model
     """
     reg = regularizers.l2(reg_strength)
-    
+
     model = Sequential()
 
     model.add(Conv1D(units, kernel_size=3,
@@ -153,11 +153,10 @@ def make_1d_cnn_model(num_classes, num_input_feats, units, reg_strength, input_b
     model.add(MaxPooling1D(pool_size=2, strides=2))
 
     model.add(Flatten())
-    model.add(Dense(units*4, activation='relu', 
+    model.add(Dense(units*4, activation='relu',
               kernel_regularizer=reg, bias_regularizer=reg))
     model.add(Dropout(rate=dropout))
-    model.add(Dense(num_classes, activation='softmax', 
+    model.add(Dense(num_classes, activation='softmax',
               kernel_regularizer=reg, bias_regularizer=reg))
 
     return model
-

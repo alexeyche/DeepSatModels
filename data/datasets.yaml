@@ -1,7 +1,7 @@
 MTLCC:
-    basedir: "..."
-    paths_train: ".../240pkl/train_paths.csv"
-    paths_eval: ".../240pkl/eval_paths.csv"
+    basedir: "."
+    paths_train: "./data_IJGI18/datasets/full/240pkl/train_paths.csv"
+    paths_eval: "./data_IJGI18/datasets/full/240pkl/eval_paths.csv"
 
 T31TFM_1618:
     basedir: "..."

@@ -1,4 +1,7 @@
+
 import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -31,15 +34,15 @@ def train_and_evaluate(net, dataloaders, config, device):
         # run optimizer
         optimizer.step()
         return outputs, ground_truth, loss
-  
+
     def evaluate(net, evalloader, loss_fn, config):
         num_classes = config['MODEL']['num_classes']
         Neval = len(evalloader)
-        
+
         predicted_all = []
         labels_all = []
         losses_all = []
-        
+
         net.eval()
         with torch.no_grad():
             for step, sample in enumerate(evalloader):
@@ -52,7 +55,7 @@ def train_and_evaluate(net, dataloaders, config, device):
 
                 ground_truth = loss_input_fn(sample, device)
                 loss = loss_fn['all'](logits, ground_truth)
-                
+
                 target, mask = ground_truth
 
                 if mask is not None:
@@ -62,7 +65,7 @@ def train_and_evaluate(net, dataloaders, config, device):
                     predicted_all.append(predicted.view(-1).cpu().numpy())
                     labels_all.append(target.view(-1).cpu().numpy())
                 losses_all.append(loss.view(-1).cpu().detach().numpy())
-        
+
         print("finished iterating over dataset after step %d" % step)
         print("calculating metrics...")
         predicted_classes = np.concatenate(predicted_all)
@@ -140,16 +143,16 @@ def train_and_evaluate(net, dataloaders, config, device):
     copy_yaml(config)
 
     model_input_fn = get_model_data_input(config)
-    
+
     loss_input_fn = get_loss_data_input(config)
-    
+
     loss_fn = {'all': get_loss(config, device, reduction=None),
                'mean': get_loss(config, device, reduction="mean")}
-    
+
     trainable_params = get_net_trainable_params(net)
     optimizer = optim.Adam(trainable_params, lr=lr, weight_decay=weight_decay)
     optimizer.zero_grad()
-    
+
     decay_fn = lambda epoch: dr ** epoch
     scheduler = LambdaLR(optimizer, lr_lambda=decay_fn)
 
@@ -160,7 +163,7 @@ def train_and_evaluate(net, dataloaders, config, device):
         for step, sample in enumerate(dataloaders['train']):
 
             abs_step = start_global + (epoch - start_epoch) * num_steps_train + step
-            
+
             logits, ground_truth, loss = train_step(net, sample, loss_fn, optimizer, device,
                                                     model_input_fn=model_input_fn, loss_input_fn=loss_input_fn)
             labels, unk_masks = ground_truth
@@ -202,10 +205,10 @@ def train_and_evaluate(net, dataloaders, config, device):
             scheduler = LambdaLR(optimizer, lr_lambda=decay_fn)
 
     print('Finished Training')
-    
+
 
 if __name__ == "__main__":
-    
+
     #------------------------------------------------------------------------------------------------------------------#
     # USER INPUT
     parser = argparse.ArgumentParser(description='gather relative paths for MTLCC tfrecords')
@@ -218,7 +221,7 @@ if __name__ == "__main__":
     config_file = opt.config_file
 
     device_ids = [int(i) for i in gpu_ids if i.isnumeric()]
-    device = get_device(device_ids, allow_cpu=False)
+    device = get_device(device_ids, allow_cpu=True)
 
     config = read_yaml(config_file)
     config['local_device_ids'] = device_ids
