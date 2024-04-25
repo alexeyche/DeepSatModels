@@ -1,6 +1,8 @@
 import torch
 from data.MTLCC.dataloader import get_dataloader as get_mtlcc_dataloader
 from data.MTLCC.data_transforms import MTLCC_transform
+from data.TestSentinel2.dataloader import get_dataloader as get_test_sentinel2_dataloader
+from data.TestSentinel2.data_transforms import TestSentinel2_transform
 from data.France.dataloader import get_dataloader as get_france_dataloader
 from data.France.data_transforms import France_segmentation_transform
 from data.PASTIS24.dataloader import get_dataloader as get_pastis_dataloader
@@ -20,7 +22,7 @@ def get_dataloaders(config):
     eval_config  = config['DATASETS']['eval']
     eval_config['bidir_input'] = model_config['architecture'] == "ConvBiRNN"
     dataloaders = {}
-    
+
     # TRAIN data -------------------------------------------------------------------------------------------------------
     train_config['base_dir'] = DATASET_INFO[train_config['dataset']]['basedir']
     train_config['paths'] = DATASET_INFO[train_config['dataset']]['paths_train']
@@ -28,6 +30,11 @@ def get_dataloaders(config):
         dataloaders['train'] = get_mtlcc_dataloader(
             paths_file=train_config['paths'], root_dir=train_config['base_dir'],
             transform=MTLCC_transform(model_config, train_config, is_training=True),
+            batch_size=train_config['batch_size'], shuffle=True, num_workers=train_config['num_workers'])
+    elif train_config['dataset'] == 'TestSentinel2':
+        dataloaders['train'] = get_test_sentinel2_dataloader(
+            paths_file=train_config['paths'], root_dir=train_config['base_dir'],
+            transform=TestSentinel2_transform(model_config, train_config, is_training=True),
             batch_size=train_config['batch_size'], shuffle=True, num_workers=train_config['num_workers'])
     elif 'PASTIS' in train_config['dataset']:
         dataloaders['train'] = get_pastis_dataloader(
@@ -48,6 +55,11 @@ def get_dataloaders(config):
             paths_file=eval_config['paths'], root_dir=eval_config['base_dir'],
             transform=MTLCC_transform(model_config, eval_config, is_training=False),
             batch_size=eval_config['batch_size'], shuffle=False, num_workers=eval_config['num_workers'])
+    elif eval_config['dataset'] == 'TestSentinel2':
+        dataloaders['eval'] = get_test_sentinel2_dataloader(
+            paths_file=eval_config['paths'], root_dir=eval_config['base_dir'],
+            transform=TestSentinel2_transform(model_config, eval_config, is_training=False),
+            batch_size=eval_config['batch_size'], shuffle=False, num_workers=eval_config['num_workers'])
     elif 'PASTIS' in eval_config['dataset']:
         dataloaders['eval'] = get_pastis_dataloader(
             paths_file=eval_config['paths'], root_dir=eval_config['base_dir'],
@@ -63,22 +75,22 @@ def get_dataloaders(config):
 
 
 def get_model_data_input(config):
-    
+
     def unidir_segmentation_inputs(sample, device):
         inputs = sample['inputs'].to(device)
         return inputs
-    
+
     def bidir_segmentation_inputs(sample, device):
         inputs = sample['inputs'].to(device)
         inputs_backward = sample['inputs_backward'].to(device)
         seq_lengths = sample['seq_lengths'].to(device)
         return inputs, inputs_backward, seq_lengths
-    
+
     model = config['MODEL']['architecture']
 
     if model in ['ConvBiRNN']:
         return bidir_segmentation_inputs
-    
+
     if model in ['UNET3D', 'UNET3Df', 'UNET2D-CLSTM']:
         return unidir_segmentation_inputs
 

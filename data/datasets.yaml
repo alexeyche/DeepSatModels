@@ -3,6 +3,11 @@ MTLCC:
     paths_train: "./data_IJGI18/datasets/full/240pkl/train_paths.csv"
     paths_eval: "./data_IJGI18/datasets/full/240pkl/eval_paths.csv"
 
+TestSentinel2:
+    basedir: "/Users/alexey/code/yoda/field_boundary_detection/research/data/deep_sat/dataset"
+    paths_train: "/Users/alexey/code/yoda/field_boundary_detection/research/data/deep_sat/dataset/train_paths.csv"
+    paths_eval: "/Users/alexey/code/yoda/field_boundary_detection/research/data/deep_sat/dataset/eval_paths.csv"
+
 T31TFM_1618:
     basedir: "..."
     paths_train: ".../train_paths.csv"
