@@ -5,7 +5,7 @@ import sys
 
 
 def load_from_checkpoint(net, checkpoint, partial_restore=False, device=None):
-    
+
     assert checkpoint is not None, "no path provided for checkpoint, value is None"
     if os.path.isdir(checkpoint):
         checkpoint = max(glob.iglob(checkpoint + '/*.pth'), key=os.path.getctime)
@@ -19,7 +19,7 @@ def load_from_checkpoint(net, checkpoint, partial_restore=False, device=None):
             saved_net = torch.load(checkpoint, map_location=device)
     else:
         raise FileNotFoundError("provided checkpoint not found, does not mach any directory or file")
-    
+
     if partial_restore:
         net_dict = net.state_dict()
         saved_net = {k: v for k, v in saved_net.items() if (k in net_dict) and (k not in ["linear_out.weight", "linear_out.bias"])}
@@ -43,8 +43,8 @@ def get_net_trainable_params(net):
     print("Trainable params shapes are:")
     print([trp.shape for trp in trainable_params])
     return trainable_params
-    
-    
+
+
 def get_device(device_ids, allow_cpu=False):
     if torch.cuda.is_available():
         device = torch.device("cuda:%d" % device_ids[0])
@@ -53,4 +53,3 @@ def get_device(device_ids, allow_cpu=False):
     else:
         sys.exit("No allowed device is found")
     return device
-
